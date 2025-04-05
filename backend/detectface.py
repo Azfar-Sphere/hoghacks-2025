@@ -48,6 +48,13 @@ max_history = 7
 vertical_threshold = 0.10
 horizontal_threshold = 0.05
 
+movement_dict = {
+    "headshake":0,
+    "nod":0
+}
+
+
+
 # Read the video frame by frame
 while True:
     # Returns ret = true if the frame exists and numpy array of image
@@ -288,6 +295,7 @@ while True:
             
             shake_detected = True
             print("Head Shake Detected")
+            movement_dict['headshake'] += 1
             cv2.putText(frame, "Shake Detected", (x+150, y), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 255), 2)
 
 
@@ -348,6 +356,7 @@ while True:
 
     if len(motion_scores) >= 2:
         cv2.putText(frame, "Nod Detected", (x+150, y), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+        movement_dict["nod"] += 1
         print(f"Nod Detected with {motion_scores}")
 
     cv2.imshow("Frame", frame)
@@ -357,5 +366,6 @@ while True:
     if key == ord('q'):
         break
 
+print((movement_dict))
 capture.release()
 cv2.destroyAllWindows()
