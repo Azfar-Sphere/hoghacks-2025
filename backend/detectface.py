@@ -14,14 +14,14 @@ mp_drawing = mp.solutions.drawing_utils
 # Load the video 
 capture = cv2.VideoCapture("IMG_6171.MOV")
 
-frame_skip = 5
+frame_skip = 2
 frame_count = 0
 
 y_chin_history = []
 y_nose_history = []
-max_history = 5
+max_history = 7
 
-threshold = 120
+threshold = 0.07
 
 # Read the video frame by frame
 while True:
@@ -31,6 +31,7 @@ while True:
     if not ret:
         break
 
+    frame = cv2.resize(frame, (640, 480))
     frame = cv2.rotate(frame, cv2.ROTATE_180)
 
     frame_count += 1
@@ -61,6 +62,7 @@ while True:
     cv2.circle(frame, (chin_x, chin_y), 5, (0,0,255), 3)
     cv2.circle(frame, (nose_x, nose_y), 5, (0,0,255), 3)
 
+    face_height = 0
 
     # Detect Age
     for i, face in enumerate(faces):
@@ -69,6 +71,8 @@ while True:
         y = face['facial_area']['y']
         w = face['facial_area']['w']
         h = face['facial_area']['h']
+
+        face_height = h
 
         cropped_face = frame[y:y+h, x:x+w]
         if cropped_face.shape[0] < 100 or cropped_face.shape[1] < 100:
@@ -95,22 +99,19 @@ while True:
 
 
     if len(y_chin_history) == max_history and len(y_nose_history) == max_history:
-        dy_chin = np.diff(y_chin_history)
-        dy_nose = np.diff(y_nose_history)
+        dy_chin = np.diff(y_chin_history) / h
+        dy_nose = np.diff(y_nose_history) / h 
 
-        print(f"\n Dy_Nose: {dy_nose}")
-        print(f"\n Dy_Chin: {dy_chin}")
+        chin_movement = np.max(dy_chin) - np.min(dy_chin)
+        nose_movement = np.max(dy_nose) - np.min(dy_nose)
 
-        if ((int(np.max(dy_chin)) > threshold and int(np.min(dy_chin)) < -threshold and int(np.max(dy_nose)) > threshold and int(np.min(dy_nose)) < -threshold)):
+        if (chin_movement > threshold and nose_movement > threshold):
             cv2.putText(frame, f"Nod Detected", (x, y + 150), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)      
 
-    
-
-   
 
     cv2.imshow("Frame", frame)
 
-    key = cv2.waitKey(10)
+    key = cv2.waitKey(100)
 
     if key == ord('q'):
         break
