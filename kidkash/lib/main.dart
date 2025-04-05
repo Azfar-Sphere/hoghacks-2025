@@ -4,6 +4,7 @@ import 'firebase_options.dart';
 import 'package:kidkash/screens/storescreen.dart';
 import 'package:kidkash/screens/requestTrigger.dart';
 import 'package:kidkash/screens/kid_listener_screen.dart';
+import 'package:kidkash/screens/childlistview.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const KidListenerScreen(),
+      home: const ListViewScreen(),
     );
   }
 }
