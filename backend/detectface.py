@@ -5,7 +5,7 @@ import numpy as np
 import mediapipe as mp
 import sys
 
-debug = 0
+debug = 1
 
 
 def main(path) : 
@@ -68,8 +68,8 @@ def main(path) :
         if not ret:
             break
         
-        frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE) # For Samsung Phones
-        # frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        # frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE) # For Samsung Phones
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
         # frame = cv2.rotate(frame, cv2.ROTATE_180) # For iPhone Videos
 
 
@@ -380,6 +380,8 @@ def main(path) :
     capture.release()
     cv2.destroyAllWindows()
     
+
+    # Returns Nod if more Nods Counted than Headshakes and vice-versa
     if (movement_dict['nod'] > movement_dict['headshake']):
         print("NOD")
         return "NOD"
