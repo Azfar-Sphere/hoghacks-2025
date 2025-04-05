@@ -23,11 +23,13 @@ y_chin_history = []
 y_nose_history = []
 x_chin_history = []
 x_nose_history = []
+y_forehead_history = []
+x_forehead_history = []
 
 max_history = 7
 
 #Sets thresholds for maximum and minimum vertical and horizontal movement of head
-vertical_threshold = 0.07
+vertical_threshold = 0.10
 horizontal_threshold = 0.05
 
 # Read the video frame by frame
@@ -57,25 +59,42 @@ while True:
     #     continue
 
     #Facial Landmarks
+    valid_points = {
+        "chin": False,
+        "nose": False,
+        "forehead": False,
+    }
+
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    result = face_mesh.process(frame)
+    image_height, image_width, _ = frame.shape
+
+        #Gets Chin and Nose and Forehead Coordinates
+
     try:
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        result = face_mesh.process(frame)
-
-        #Gets Chin and Nose Coordinates
         chin = result.multi_face_landmarks[0].landmark[152]
-        nose = result.multi_face_landmarks[0].landmark[1]
-
-        #Transforms those coordinated based on the image shape
-        image_height, image_width, _ = frame.shape
         chin_x = int(chin.x * image_width)
         chin_y = int(chin.y * image_height)
+        valid_points['chin'] = True
+        cv2.circle(frame, (chin_x, chin_y), 5, (0,0,255), 3)
+    except:
+        pass
 
+    try:
+        nose = result.multi_face_landmarks[0].landmark[1]
         nose_x = int(nose.x * image_width)
         nose_y = int(nose.y * image_height)
-        
-        #Places Chin and Nose Coordinates on Image
-        cv2.circle(frame, (chin_x, chin_y), 5, (0,0,255), 3)
+        valid_points['nose'] = True
         cv2.circle(frame, (nose_x, nose_y), 5, (0,0,255), 3)
+    except:
+        pass
+
+    try:
+        forehead = result.multi_face_landmarks[0].landmark[10]
+        forehead_x = int(forehead.x * image_width)
+        forehead_y = int(forehead.y * image_width)
+        valid_points['forehead'] = True
+        cv2.circle(frame, (forehead_x, forehead_y), 5, (0,0,255), 3)
     except:
         pass
 
@@ -106,53 +125,72 @@ while True:
         cv2.rectangle(frame, (x,y), (x+w, y+h), (0, 0, 255), 2)
         cv2.putText(frame, f"Age: {analysis[0]['age']}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)      
 
-
-
-    # Detect Nod:
-    try:
-        #Appends chin and nose movements to lists
+    if valid_points['chin']:
         y_chin_history.append(chin_y)
-        y_nose_history.append(nose_y)
-
         x_chin_history.append(chin_x)
-        x_nose_history.append(nose_x)
-
-        #Pops older frames chin and nose history
         if len(y_chin_history) > max_history:
             y_chin_history.pop(0)
-
-        if len(y_nose_history) > max_history:
-            y_nose_history.pop(0)
-
-        if len(x_chin_history) > max_history:
             x_chin_history.pop(0)
 
-        if len(x_nose_history) > max_history:
+    elif not valid_points['chin']:
+        y_chin_history.clear()
+        x_chin_history.clear()
+
+    if valid_points['nose']:
+        y_nose_history.append(nose_y)
+        x_nose_history.append(nose_x)
+        if len(y_nose_history) > max_history:
+            y_nose_history.pop(0)
             x_nose_history.pop(0)
 
+    elif not valid_points['nose']:
+        y_nose_history.clear()
+        x_nose_history.clear()
 
-        #If enough frames of movement for chin and nose movement is recorded, computes vertical and horitzontal movement and detects nods
-        if len(y_chin_history) == max_history and len(y_nose_history) == max_history:
-            dy_chin = np.diff(y_chin_history) / face_height
-            dy_nose = np.diff(y_nose_history) / face_height
+    if valid_points['forehead']:
+        y_forehead_history.append(forehead_y)
+        x_forehead_history.append(forehead_x)
+        if len(y_forehead_history) > max_history:
+            y_forehead_history.pop(0)
+            x_forehead_history.pop(0)
 
-            vertical_chin_movement = np.max(dy_chin) - np.min(dy_chin)
-            vertical_nose_movement = np.max(dy_nose) - np.min(dy_nose)
+    elif not valid_points['forehead']:
+        y_forehead_history.clear()
+        x_forehead_history.clear()
 
-            dx_chin = np.diff(x_chin_history) / face_width
-            dx_nose = np.diff(x_nose_history) / face_width
 
-            horizontal_chin_movement = np.max(dx_chin) - np.min(dx_chin)
-            horizontal_nose_movement = np.max(dx_nose) - np.min(dx_nose)
+    #If enough frames of movement for chin and nose movement is recorded, computes vertical and horitzontal movement and detects nods
+    motion_scores = []
 
-            if (vertical_chin_movement > vertical_threshold and 
-                vertical_nose_movement > vertical_threshold and
-                horizontal_chin_movement < horizontal_threshold and
-                horizontal_nose_movement < horizontal_threshold):
-                cv2.putText(frame, f"Nod Detected", (x, y + 150), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)      
-                print("Nod Detected")
-    except:
-        pass
+    if len(y_chin_history) == max_history:
+        dy_chin = np.diff(y_chin_history) / face_height
+        dx_chin = np.diff(x_chin_history) / face_width
+        v_chin = np.max(dy_chin) - np.min(dy_chin)
+        h_chin = np.max(dx_chin) - np.min(dx_chin)
+        # print(f"\nVertical Chin: {v_chin}, Horizontal Chin: {h_chin}")
+        if v_chin > vertical_threshold and h_chin < horizontal_threshold:
+            motion_scores.append('chin')
+
+    if len(y_nose_history) == max_history:
+        dy_nose = np.diff(y_nose_history) / face_height
+        dx_nose = np.diff(x_nose_history) / face_width
+        v_nose = np.max(dy_nose) - np.min(dy_nose)
+        h_nose = np.max(dx_nose) - np.min(dx_nose)
+        if v_nose > vertical_threshold and h_nose < horizontal_threshold:
+            motion_scores.append('nose')
+
+    if len(y_forehead_history) == max_history:
+        dy_forehead = np.diff(y_forehead_history) / face_height
+        dx_forehead = np.diff(x_forehead_history) / face_width
+        v_forehead = np.max(dy_forehead) - np.min(dy_forehead)
+        h_forehead = np.max(dx_forehead) - np.min(dx_forehead)
+        # print(f"Vertical Forehead: {v_forehead}, Horizontal Forehead: {h_forehead}\n")
+        if v_forehead > vertical_threshold and h_forehead < horizontal_threshold:
+            motion_scores.append('forehead')
+
+    if len(motion_scores) >= 2:
+        cv2.putText(frame, "Nod Detected", (x+150, y), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+        print(f"Nod Detected with {motion_scores}")
 
     cv2.imshow("Frame", frame)
 
