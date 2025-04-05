@@ -1,0 +1,7 @@
+class Item {
+  final String name;
+  final String imageUrl;
+  final int price;
+
+  Item({required this.name, required this.imageUrl, required this.price});
+}
