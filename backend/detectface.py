@@ -12,7 +12,7 @@ face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=5)
 mp_drawing = mp.solutions.drawing_utils
 
 # Load the video 
-capture = cv2.VideoCapture("IMG_6171.MOV")
+capture = cv2.VideoCapture("IMG_6172.MOV")
 
 #Setup frame Skipping
 frame_skip = 1
@@ -44,9 +44,6 @@ x_right_cheek_history = []
 
 max_history = 7
 
-#Sets thresholds for maximum and minimum vertical and horizontal movement of head
-vertical_threshold = 0.07
-horizontal_threshold = 0.05
 
 movement_dict = {
     "headshake":0,
@@ -268,6 +265,12 @@ while True:
         x_right_cheek_history.clear()
 
 
+    face_width_ratio = face_width / 640  
+    face_width_ratio = np.clip(face_width_ratio, 0.3, 1.0)
+
+    horizontal_threshold = 0.05 + 0.03 * (1 - face_width_ratio)
+
+
     #Checks the X Movement between the right and left side of the head:
     shake_detected = False
 
@@ -290,8 +293,8 @@ while True:
         dx_right_cheek /= face_width
 
         # Check if both ears and both cheeks are moving significantly
-        if (dx_left_ear > horizontal_threshold*1.2 and dx_right_ear > horizontal_threshold*1.2 and
-            dx_left_cheek > horizontal_threshold*1.2 and dx_right_cheek > horizontal_threshold*1.2):
+        if (dx_left_ear > horizontal_threshold and dx_right_ear > horizontal_threshold and
+            dx_left_cheek > horizontal_threshold and dx_right_cheek > horizontal_threshold):
             
             shake_detected = True
             print("Head Shake Detected")
@@ -302,13 +305,17 @@ while True:
     #If enough frames of movement for chin and nose movement is recorded, computes vertical and horitzontal movement and detects nods
     motion_scores = []
 
+    face_height_ratio = face_height / 480
+    face_height_ratio = np.clip(face_height_ratio, 0.3, 1.0)
+    vertical_threshold = 0.05 + 0.03 * (1-face_height_ratio)
+
     if len(y_chin_history) == max_history:
         dy_chin = np.diff(y_chin_history) / face_height
         dx_chin = np.diff(x_chin_history) / face_width
         v_chin = np.max(dy_chin) - np.min(dy_chin)
         h_chin = np.max(dx_chin) - np.min(dx_chin)
         # print(f"\nVertical Chin: {v_chin}, Horizontal Chin: {h_chin}")
-        if v_chin > vertical_threshold and h_chin < horizontal_threshold:
+        if v_chin > vertical_threshold*1.8 and h_chin < horizontal_threshold:
             motion_scores.append('chin')
 
     if len(y_nose_history) == max_history:
