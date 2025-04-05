@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:kidkash/screens/storescreen.dart';
+import 'package:kidkash/screens/storescreen.dart'; // Ensure this import is correct
 import 'package:kidkash/screens/requestTrigger.dart';
 import 'package:kidkash/screens/kid_listener_screen.dart';
 import 'package:kidkash/screens/childlistview.dart';
 import 'package:kidkash/screens/startscreen.dart';
-import 'package:kidkash/screens/storescreen.dart';
+import 'package:kidkash/screens/video_capture_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const KidListenerScreen(),
+      home: const StoreScreen(), // Changed this to StoreScreen
     );
   }
 }

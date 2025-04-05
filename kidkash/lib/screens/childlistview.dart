@@ -1,42 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:kidkash/model/item.dart'; // Import the Item model
 
 class ListViewScreen extends StatelessWidget {
-  const ListViewScreen({super.key});
+  final List<Item> cartItems; // List of items passed from CheckoutPage
+
+  // Constructor to accept cartItems
+  const ListViewScreen({super.key, required this.cartItems});
 
   @override
   Widget build(BuildContext context) {
-    final List<String> items = [
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4',
-      'Item 5',
-      'Item 6',
-      'Item 7',
-      'Item 8',
-      'Item 9',
-      'Item 10',
-    ];
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Request List'),
+        title: const Text('Requested Items'),
       ),
       body: ListView.builder(
-        itemCount: items.length, // Number of items in the list
+        itemCount: cartItems.length, // Display number of cart items
         itemBuilder: (context, index) {
-          // Building each list item
-          return ListTile(
-            leading: Icon(Icons.camera_alt), // Icon at the beginning of each item
+          Item item = cartItems[index];
 
-            title: Text(items[index]), // The text of the list item
-            subtitle: Text('Subtitle for ${items[index]}'), // Optional subtitle
-            onTap: () {
-              // Action when the list item is tapped
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('You tapped ${items[index]}')),
-              );
-            },
+          return Card(
+            margin: const EdgeInsets.symmetric(vertical: 8.0),
+            elevation: 3,
+            child: ListTile(
+              leading: Image.network(
+                item.imageUrl,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              ),
+              title: Text(item.name), // Display item name
+              subtitle: Text('Price: \$${item.price.toStringAsFixed(2)}'), // Display item price
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('You tapped ${item.name}')),
+                );
+              },
+            ),
           );
         },
       ),
