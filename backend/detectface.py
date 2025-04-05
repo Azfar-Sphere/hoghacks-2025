@@ -3,8 +3,10 @@ import cv2
 import json
 import numpy as np
 import mediapipe as mp
+import sys
 
 debug = 0
+
 
 def main(path) : 
     #Setup mediapipe
@@ -380,7 +382,6 @@ def main(path) :
         print("SHAKE")
         return "SHAKE"
 
-main()
 
 if __name__ == "__main__":
     result = main(sys.argv[1])

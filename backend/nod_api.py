@@ -22,8 +22,9 @@ async def detect_nod(video: UploadFile = File(...)):
     # Run your existing main.py as subprocess
     result = subprocess.run(["python", "main.py", temp_path], capture_output=True, text=True)
 
-    print("Subprocess Output:", result.stdout)
-
+    print("Subprocess STDOUT:", result.stdout)
+    print("Subprocess STDERR:", result.stderr)
+    
     if "NO_FACE" in result.stdout:
         return JSONResponse(status_code=400, content={"error": "No face detected in the video."})
     
