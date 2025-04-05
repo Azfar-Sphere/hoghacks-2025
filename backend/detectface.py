@@ -15,16 +15,32 @@ mp_drawing = mp.solutions.drawing_utils
 capture = cv2.VideoCapture("IMG_6172.MOV")
 
 #Setup frame Skipping
-frame_skip = 2
+frame_skip = 1
 frame_count = 0
 
 #Intialize Lists to track chin and nose placement histories
 y_chin_history = []
-y_nose_history = []
 x_chin_history = []
+
+
+y_nose_history = []
 x_nose_history = []
+
 y_forehead_history = []
 x_forehead_history = []
+
+y_left_ear_history = []
+x_left_ear_history = []
+
+y_right_ear_history = []
+x_right_ear_history = []
+
+y_left_cheek_history = []
+x_left_cheek_history = []
+
+y_right_cheek_history = []
+x_right_cheek_history = []
+
 
 max_history = 7
 
@@ -63,6 +79,10 @@ while True:
         "chin": False,
         "nose": False,
         "forehead": False,
+        "left_ear": False,
+        "right_ear": False,
+        "left_cheek": False,
+        "right_cheek": False,
     }
 
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -97,6 +117,43 @@ while True:
         cv2.circle(frame, (forehead_x, forehead_y), 5, (0,0,255), 3)
     except:
         pass
+
+    try:
+        left_ear = result.multi_face_landmarks[0].landmark[389]
+        left_ear_x = int(left_ear.x * image_width)
+        left_ear_y = int(left_ear.y * image_height)
+        valid_points["left_ear"] = True
+        cv2.circle(frame, (left_ear_x, left_ear_y), 5, (255, 255, 0), 3)
+    except:
+        pass
+
+    try:
+        right_ear = result.multi_face_landmarks[0].landmark[162]
+        right_ear_x = int(right_ear.x * image_width)
+        right_ear_y = int(right_ear.y * image_height)
+        valid_points["right_ear"] = True
+        cv2.circle(frame, (right_ear_x, right_ear_y), 5, (255, 255, 0), 3)
+    except:
+        pass
+
+    try:
+        left_cheek = result.multi_face_landmarks[0].landmark[234]
+        left_cheek_x = int(left_cheek.x * image_width)
+        left_cheek_y = int(left_cheek.y * image_height)
+        valid_points["left_cheek"] = True
+        cv2.circle(frame, (left_cheek_x, left_cheek_y), 5, (255, 0, 0), 3)
+    except:
+        pass
+
+    try:
+        right_cheek = result.multi_face_landmarks[0].landmark[454]
+        right_cheek_x = int(right_cheek.x * image_width)
+        right_cheek_y = int(right_cheek.y * image_height)
+        valid_points["right_cheek"] = True
+        cv2.circle(frame, (right_cheek_x, right_cheek_y), 5, (255, 0, 0), 3)
+    except:
+        pass
+
 
     #Sets up Face Height and Face Width Variables
     face_height = 0
@@ -157,6 +214,107 @@ while True:
     elif not valid_points['forehead']:
         y_forehead_history.clear()
         x_forehead_history.clear()
+
+
+    if valid_points['left_ear']:
+        y_left_ear_history.append(left_ear_y)
+        x_left_ear_history.append(left_ear_x)
+        if len(y_left_ear_history) > max_history:
+            y_left_ear_history.pop(0)
+            x_left_ear_history.pop(0)
+
+    elif not valid_points['left_ear']:
+        y_left_ear_history.clear()
+        x_left_ear_history.clear()
+
+    if valid_points['right_ear']:
+        y_right_ear_history.append(right_ear_y)
+        x_right_ear_history.append(right_ear_x)
+        if len(y_right_ear_history) > max_history:
+            y_right_ear_history.pop(0)
+            x_right_ear_history.pop(0)
+
+    elif not valid_points['right_ear']:
+        y_right_ear_history.clear()
+        x_right_ear_history.clear()
+
+    if valid_points['left_cheek']:
+        y_left_cheek_history.append(left_cheek_y)
+        x_left_cheek_history.append(left_cheek_x)
+        if len(y_left_cheek_history) > max_history:
+            y_left_cheek_history.pop(0)
+            x_left_cheek_history.pop(0)
+
+    elif not valid_points['left_cheek']:
+        y_left_cheek_history.clear()
+        x_left_cheek_history.clear()
+
+    if valid_points['right_cheek']:
+        y_right_cheek_history.append(right_cheek_y)
+        x_right_cheek_history.append(right_cheek_x)
+        if len(y_right_cheek_history) > max_history:
+            y_right_cheek_history.pop(0)
+            x_right_cheek_history.pop(0)
+
+    elif not valid_points['right_cheek']:
+        y_right_cheek_history.clear()
+        x_right_cheek_history.clear()
+
+
+    #Checks the X Movement between the right and left side of the head:
+    shake_detected = False
+
+    if (len(x_left_ear_history) == max_history and
+        len(x_right_ear_history) == max_history and
+        len(x_left_cheek_history) == max_history and
+        len(x_right_cheek_history) == max_history):
+
+        # Compute movement range for each side
+        dx_left_ear = np.max(x_left_ear_history) - np.min(x_left_ear_history)
+        dx_right_ear = np.max(x_right_ear_history) - np.min(x_right_ear_history)
+
+        dx_left_cheek = np.max(x_left_cheek_history) - np.min(x_left_cheek_history)
+        dx_right_cheek = np.max(x_right_cheek_history) - np.min(x_right_cheek_history)
+
+        # Normalize by face width
+        dx_left_ear /= face_width
+        dx_right_ear /= face_width
+        dx_left_cheek /= face_width
+        dx_right_cheek /= face_width
+
+        # Check if both ears and both cheeks are moving significantly
+        if (dx_left_ear > horizontal_threshold and dx_right_ear > horizontal_threshold and
+            dx_left_cheek > horizontal_threshold and dx_right_cheek > horizontal_threshold):
+            
+            shake_detected = True
+            print("Head Shake Detected")
+            cv2.putText(frame, "Shake Detected", (x+150, y), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 255), 2)
+
+
+        if shake_detected:
+            y_chin_history.clear()
+            x_chin_history.clear()
+
+
+            y_nose_history.clear()
+            x_nose_history.clear()
+
+            y_forehead_history.clear()
+            x_forehead_history.clear()
+
+            y_left_ear_history.clear()
+            x_left_ear_history.clear()
+
+            y_right_ear_history.clear()
+            x_right_ear_history.clear()
+
+            y_left_cheek_history.clear()
+            x_left_cheek_history.clear()
+
+            y_right_cheek_history.clear()
+            x_right_cheek_history.clear()
+            continue
+
 
 
     #If enough frames of movement for chin and nose movement is recorded, computes vertical and horitzontal movement and detects nods
