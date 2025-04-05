@@ -49,7 +49,7 @@ class StartScreen extends StatelessWidget {
                     textStyle: TextStyle(fontSize: 18),
                   ),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/childLogin');
+                    Navigator.pushReplacementNamed(context, '/childlistview.dart');
                   },
                   child: Text('Child'),
                 ),
