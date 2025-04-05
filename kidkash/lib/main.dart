@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const StoreScreen(), // Changed this to StoreScreen
+      home: const StartScreen(), // Changed this to StoreScreen
     );
   }
 }

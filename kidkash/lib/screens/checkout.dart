@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kidkash/model/item.dart'; // Import the Item model
+import 'package:kidkash/screens/childlistview.dart';
 
 class CheckoutPage extends StatelessWidget {
   final List<Item> cartItems; // List of items in the cart
@@ -69,16 +70,13 @@ class CheckoutPage extends StatelessWidget {
                 if (isCartEmpty) {
                   Navigator.pop(context);
                 } else {
-                  // Show a SnackBar or any confirmation without navigation
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Purchase requested!'),
-                      duration: Duration(seconds: 2),
+                  // Navigate to the ListViewScreen and pass the cart items
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ListViewScreen(cartItems: cartItems),
                     ),
                   );
-
-                  // Optional: Perform any additional action here
-                  // For example, you could update Firestore or make an API request
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -99,5 +97,6 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 }
+
 
 

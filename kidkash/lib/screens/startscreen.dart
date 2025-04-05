@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kidkash/screens/childlistview.dart';
+import 'package:kidkash/screens/itemdetilscreen.dart';
+import 'package:kidkash/screens/storescreen.dart' show StoreScreen;
 
 class StartScreen extends StatelessWidget {
   const StartScreen({super.key});
@@ -60,13 +63,31 @@ class StartScreen extends StatelessWidget {
                   _buildLoginButton(
                     label: 'I am a Parent',
                     icon: Icons.person_outline,
-                    onPressed: () => Navigator.pushReplacementNamed(context, '/adultLogin'),
+                    onPressed: () {
+                      print(" adult button pressed");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => StoreScreen(),
+                        ),
+                      );
+                 },
+
                   ),
                   const SizedBox(height: 16),
                   _buildLoginButton(
                     label: 'I am a Kid',
                     icon: Icons.child_care,
-                    onPressed: () => Navigator.pushReplacementNamed(context, '/childlistview.dart'),
+                    onPressed: () {
+                      print("Kid Button pressed");
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(
+        builder: (context) => ListViewScreen(cartItems: []),  // Pass an empty list as dummy value
+                      ),
+                    );
+                  },
+
                   ),
                 ],
               ),

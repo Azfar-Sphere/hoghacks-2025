@@ -5,7 +5,7 @@ class ListViewScreen extends StatelessWidget {
   final List<Item> cartItems; // List of items passed from CheckoutPage
 
   // Constructor to accept cartItems
-  const ListViewScreen({super.key, required this.cartItems});
+const ListViewScreen({super.key, required this.cartItems});
 
   @override
   Widget build(BuildContext context) {
@@ -42,3 +42,4 @@ class ListViewScreen extends StatelessWidget {
     );
   }
 }
+
