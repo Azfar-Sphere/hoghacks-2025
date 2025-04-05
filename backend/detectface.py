@@ -4,7 +4,7 @@ import json
 import numpy as np
 
 # Load the video 
-capture = cv2.VideoCapture("IMG_6168.MOV")
+capture = cv2.VideoCapture("IMG_8676.MOV")
 
 frame_skip = 5
 frame_count = 0
@@ -17,7 +17,7 @@ while True:
     if not ret:
         break
 
-    frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
     frame_count += 1
 
@@ -31,23 +31,30 @@ while True:
         continue
 
     for i, face in enumerate(faces):
-        analysis = DeepFace.analyze(face['face'], actions=['age', 'gender','emotion'], enforce_detection=False)
-
-        print(f"Age: {analysis[0]['age']}, Gender: {analysis[0]['gender']}, Emotion: {analysis[0]['emotion']}")
 
         x = face['facial_area']['x']
         y = face['facial_area']['y']
         w = face['facial_area']['w']
         h = face['facial_area']['h']
 
+        cropped_face = frame[y:y+h, x:x+w]
+        if cropped_face.shape[0] < 100 or cropped_face.shape[1] < 100:
+            cropped_face = cv2.resize(cropped_face, (100, 100))
+
+
+        analysis = DeepFace.analyze(cropped_face, actions=['age', 'gender','emotion'], enforce_detection=False)
+
+        print(f"\n\nAnalysis: {analysis} \n\n")
+
+        # print(f"Age: {analysis[0]['age']}, Gender: {analysis[0]['gender']}, Emotion: {analysis[0]['emotion']}")
+
 
         cv2.rectangle(frame, (x,y), (x+w, y+h), (0, 0, 255), 2)
         cv2.putText(frame, f"Age: {analysis[0]['age']}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)      
 
-        emotion_dict = analysis[0]['emotion']
-        dominant_emotion = max(emotion_dict, key=emotion_dict.get)
 
-        cv2.putText(frame, f"Emotion: {dominant_emotion}", (x+150, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+
+        cv2.putText(frame, f"Emotion: {analysis[0]['dominant_emotion']}", (x+150, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
 
 
         
