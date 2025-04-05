@@ -12,7 +12,7 @@ face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=5)
 mp_drawing = mp.solutions.drawing_utils
 
 # Load the video 
-capture = cv2.VideoCapture("IMG_6172.MOV")
+capture = cv2.VideoCapture("IMG_6171.MOV")
 
 #Setup frame Skipping
 frame_skip = 1
@@ -45,7 +45,7 @@ x_right_cheek_history = []
 max_history = 7
 
 #Sets thresholds for maximum and minimum vertical and horizontal movement of head
-vertical_threshold = 0.10
+vertical_threshold = 0.07
 horizontal_threshold = 0.05
 
 movement_dict = {
@@ -290,39 +290,13 @@ while True:
         dx_right_cheek /= face_width
 
         # Check if both ears and both cheeks are moving significantly
-        if (dx_left_ear > horizontal_threshold and dx_right_ear > horizontal_threshold and
-            dx_left_cheek > horizontal_threshold and dx_right_cheek > horizontal_threshold):
+        if (dx_left_ear > horizontal_threshold*1.2 and dx_right_ear > horizontal_threshold*1.2 and
+            dx_left_cheek > horizontal_threshold*1.2 and dx_right_cheek > horizontal_threshold*1.2):
             
             shake_detected = True
             print("Head Shake Detected")
             movement_dict['headshake'] += 1
             cv2.putText(frame, "Shake Detected", (x+150, y), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 255), 2)
-
-
-        if shake_detected:
-            y_chin_history.clear()
-            x_chin_history.clear()
-
-
-            y_nose_history.clear()
-            x_nose_history.clear()
-
-            y_forehead_history.clear()
-            x_forehead_history.clear()
-
-            y_left_ear_history.clear()
-            x_left_ear_history.clear()
-
-            y_right_ear_history.clear()
-            x_right_ear_history.clear()
-
-            y_left_cheek_history.clear()
-            x_left_cheek_history.clear()
-
-            y_right_cheek_history.clear()
-            x_right_cheek_history.clear()
-            continue
-
 
 
     #If enough frames of movement for chin and nose movement is recorded, computes vertical and horitzontal movement and detects nods
