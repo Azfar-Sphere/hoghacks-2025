@@ -5,7 +5,7 @@ import numpy as np
 import mediapipe as mp
 import sys
 
-debug = 1
+debug = 0
 
 
 def main(path) : 
@@ -73,8 +73,8 @@ def main(path) :
         # frame = cv2.rotate(frame, cv2.ROTATE_180) # For iPhone Videos
 
 
-        #Resized image to 640x480
-        # frame = cv2.resize(frame, (640, 480))
+        # Resized image to 640x480
+        frame = cv2.resize(frame, (640, 480))
 
         #Adds frame count
         frame_count += 1
