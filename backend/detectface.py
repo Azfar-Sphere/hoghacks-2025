@@ -2,6 +2,14 @@ from deepface import DeepFace
 import cv2
 import json
 import numpy as np
+import mediapipe as mp
+
+
+
+#Setup mediapipe
+mp_face_mesh = mp.solutions.face_mesh
+face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=5)
+mp_drawing = mp.solutions.drawing_utils
 
 # Load the video 
 capture = cv2.VideoCapture("IMG_6171.MOV")
@@ -9,7 +17,8 @@ capture = cv2.VideoCapture("IMG_6171.MOV")
 frame_skip = 5
 frame_count = 0
 
-y_history = []
+y_chin_history = []
+y_nose_history = []
 max_history = 5
 
 threshold = 120
@@ -35,6 +44,25 @@ while True:
         print("No Faces detected")
         continue
 
+    #Facial Landmarks
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    result = face_mesh.process(frame)
+
+    chin = result.multi_face_landmarks[0].landmark[152]
+    nose = result.multi_face_landmarks[0].landmark[1]
+
+    image_height, image_width, _ = frame.shape
+    chin_x = int(chin.x * image_width)
+    chin_y = int(chin.y * image_height)
+
+    nose_x = int(nose.x * image_width)
+    nose_y = int(nose.y * image_height)
+
+    cv2.circle(frame, (chin_x, chin_y), 5, (0,0,255), 3)
+    cv2.circle(frame, (nose_x, nose_y), 5, (0,0,255), 3)
+
+
+    # Detect Age
     for i, face in enumerate(faces):
 
         x = face['facial_area']['x']
@@ -42,42 +70,47 @@ while True:
         w = face['facial_area']['w']
         h = face['facial_area']['h']
 
-        face_center_y = y+h // 2
-        y_history.append(face_center_y)
-        if len(y_history) > max_history:
-            y_history.pop(0)
-
-        if len(y_history) == max_history:
-            dy = np.diff(y_history)
-            if (np.max(dy) > threshold and np.min(dy) < -120):
-                cv2.putText(frame, "NOD Detected", (x, y + 250), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)      
-
-
-
         cropped_face = frame[y:y+h, x:x+w]
         if cropped_face.shape[0] < 100 or cropped_face.shape[1] < 100:
             cropped_face = cv2.resize(cropped_face, (100, 100))
 
-
-        analysis = DeepFace.analyze(cropped_face, actions=['age', 'gender','emotion'], enforce_detection=False)
+        analysis = DeepFace.analyze(cropped_face, actions=['age'], enforce_detection=False)
 
         # print(f"\n\nAnalysis: {analysis} \n\n")
-
         # print(f"Age: {analysis[0]['age']}, Gender: {analysis[0]['gender']}, Emotion: {analysis[0]['emotion']}")
-
 
         cv2.rectangle(frame, (x,y), (x+w, y+h), (0, 0, 255), 2)
         cv2.putText(frame, f"Age: {analysis[0]['age']}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)      
 
 
+    # Detect Nod:
+    y_chin_history.append(chin_y)
+    y_nose_history.append(nose_y)
 
-        cv2.putText(frame, f"Emotion: {analysis[0]['dominant_emotion']}", (x+150, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+    if len(y_chin_history) > max_history:
+        y_chin_history.pop(0)
+
+    if len(y_nose_history) > max_history:
+        y_nose_history.pop(0)
 
 
-        
+    if len(y_chin_history) == max_history and len(y_nose_history) == max_history:
+        dy_chin = np.diff(y_chin_history)
+        dy_nose = np.diff(y_nose_history)
+
+        print(f"\n Dy_Nose: {dy_nose}")
+        print(f"\n Dy_Chin: {dy_chin}")
+
+        if ((int(np.max(dy_chin)) > threshold and int(np.min(dy_chin)) < -threshold and int(np.max(dy_nose)) > threshold and int(np.min(dy_nose)) < -threshold)):
+            cv2.putText(frame, f"Nod Detected", (x, y + 150), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)      
+
+    
+
+   
+
     cv2.imshow("Frame", frame)
 
-    key = cv2.waitKey(10) & 0xFF  
+    key = cv2.waitKey(10)
 
     if key == ord('q'):
         break
