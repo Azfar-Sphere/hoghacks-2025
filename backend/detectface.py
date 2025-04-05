@@ -12,7 +12,6 @@ def main(path) :
     #Setup mediapipe
     mp_face_mesh = mp.solutions.face_mesh
     face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1)
-    mp_drawing = mp.solutions.drawing_utils
 
     # Load the video, gets FPS and video duration
     capture = cv2.VideoCapture(path)
@@ -70,7 +69,6 @@ def main(path) :
 
         #Resized image to 640x480
         frame = cv2.resize(frame, (640, 480))
-        frame = cv2.rotate(frame, cv2.ROTATE_180)
 
         #Adds frame count
         frame_count += 1
@@ -82,9 +80,10 @@ def main(path) :
         #Extracts the faces from the video 
         faces = DeepFace.extract_faces(frame, enforce_detection=False)
 
-        # if not faces:
-        #     print("No Faces detected")
-        #     continue
+        # Returns No Face if no face is detected
+        if not faces:
+            print("NO_FACE")
+            return "NO_FACE"
 
         #Facial Landmarks
         valid_points = {
@@ -194,16 +193,13 @@ def main(path) :
 
             # Predicts age od face
             analysis = DeepFace.analyze(cropped_face, actions=['age'], enforce_detection=False)
-
+            age = analysis[0]['age']
+            if age > 30:
+                return "TOO_OLD"
 
             # Displays prediction
             cv2.rectangle(frame, (x,y), (x+w, y+h), (0, 0, 255), 2)
-            cv2.putText(frame, f"Age: {analysis[0]['age']}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)      
-
-        if frame_count == 0 or (face_height == 0 and face_width == 0):
-            print("NO_FACE")
-            return
-
+            cv2.putText(frame, f"Age: {age}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)      
 
 
         # Check if landmarks around the face exist, if they do, add their history (x and y coords)
@@ -298,7 +294,6 @@ def main(path) :
 
 
         #Checks the X Movement between the right and left side of the head:
-        shake_detected = False
 
         if (len(x_left_ear_history) == max_history and
             len(x_right_ear_history) == max_history and
