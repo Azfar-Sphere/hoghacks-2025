@@ -1,16 +1,20 @@
-# kidkash
+Team Name: UALR ACM
+Project Name: KidKash
+Description: 
 
-A new Flutter project.
+Want to buy groceries? Better get approval first!
+KidKash flips family finances on its head by combining a digital storefront with real-time kid approval. Parents browse and add items to their cart, but before they can check out, they must receive a head nod from their kids — powered by computer vision.
 
-## Getting Started
+"Can I buy milk?"
+"Nope, only chocolate milk passes the vibe check!"
 
-This project is a starting point for a Flutter application.
+With KidKash, parents handle the shopping, but kids hold the power. This playful app transforms family spending into a collaborative game of trust, negotiation, and tiny tyrant vetoes. It’s Yin and Yang, allowance-style.
 
-A few resources to get you started if this is your first Flutter project:
+Team Members:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Example:
+@Dalen - Dalen Villa
+@Azfar_Rahman - Syed Azfar Rahman
+@BlankZ3ro - James Mcmath
+@dBol - Jay Dempsey
+@Llyone - Kevin Aguilar
