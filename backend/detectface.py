@@ -5,7 +5,7 @@ import numpy as np
 import mediapipe as mp
 import sys
 
-debug = 0
+debug = 1
 
 
 def main(path) : 
@@ -22,7 +22,7 @@ def main(path) :
     # Setup frame Skipping
     # Sets up amount of frames to skip based on the target frames to analyze and the amount of frames in the video
     target_frames = 60
-    frame_skip = max(1, min(int(total_frames // target_frames), 8))
+    frame_skip = max(1, min(int(total_frames // target_frames), 6))
     frame_count = 0
 
     # Initializes Empty Lists for Chin, Nose, Forehead, Ears and Cheek Histories
@@ -50,7 +50,7 @@ def main(path) :
 
 
     # Sets the Maximum number of Frames to Look and compare movement between
-    max_history = 10
+    max_history = 8
 
     # Sets up Dict to store headshakes and nods in a video
     movement_dict = {
@@ -74,7 +74,7 @@ def main(path) :
 
 
         # Resized image to 640x480
-        frame = cv2.resize(frame, (640, 480))
+        # frame = cv2.resize(frame, (640, 480))
 
         #Adds frame count
         frame_count += 1
@@ -200,7 +200,7 @@ def main(path) :
             # Predicts age of face
             analysis = DeepFace.analyze(cropped_face, actions=['age'], enforce_detection=False)
             age = analysis[0]['age']
-            if age > 35:
+            if age > 45:
                 return "TOO_OLD"
 
             # Displays prediction
@@ -326,7 +326,7 @@ def main(path) :
                 shake_detected = True
                 print("Head Shake Detected")
                 movement_dict['headshake'] += 1
-                cv2.putText(frame, "Shake Detected", (x+150, y-100), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 255), 2)
+                cv2.putText(frame, "Shake Detected", (x, y-100), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 255), 2)
 
 
 
@@ -374,8 +374,8 @@ def main(path) :
 
             key = cv2.waitKey(100)
 
-            if key == ord('q'):
-                break
+            # if key == ord('q'):
+            #     break
 
     capture.release()
     cv2.destroyAllWindows()
