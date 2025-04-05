@@ -6,6 +6,8 @@ import numpy as np
 # Load the video 
 capture = cv2.VideoCapture("IMG_6168.MOV")
 
+frame_skip = 5
+frame_count = 0
 
 # Read the video frame by frame
 while True:
@@ -16,6 +18,11 @@ while True:
         break
 
     frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+
+    frame_count += 1
+
+    if frame_count % frame_skip != 0:
+        continue
 
     faces = DeepFace.extract_faces(frame, enforce_detection=False)
 
@@ -47,6 +54,7 @@ while True:
     cv2.imshow("Frame", frame)
 
     key = cv2.waitKey(1) & 0xFF  
+
     if key == ord('q'):
         break
 
