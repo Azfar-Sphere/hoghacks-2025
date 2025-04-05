@@ -89,10 +89,10 @@ class _StoreScreenState extends State<StoreScreen> {
       ),
       body: SafeArea(
         child: GridView.builder(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(5),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2, // Two items per row
-            crossAxisSpacing: 10,
+            crossAxisSpacing: 2,
             mainAxisSpacing: 10,
           ),
           itemCount: dummyItems.length,
@@ -105,49 +105,53 @@ class _StoreScreenState extends State<StoreScreen> {
   }
 
   Widget _buildItemCard(BuildContext context, Item item) {
-    return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: GestureDetector(
-        onTap: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ItemDetailScreen(
-                item: item,
-                cartItems: cartItems, // passing cart items by reference
+  return Card(
+    elevation: 5,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(15),
+    ),
+    child: GestureDetector(
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ItemDetailScreen(
+              item: item,
+              cartItems: cartItems, // passing cart items by reference
+            ),
+          ),
+        );
+        setState(() {}); // Refresh UI after coming back from item details
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            height: 50, // Adjust the height of the image container
+            width: 50, // Full width
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(9),
+              child: Image.network(
+                item.imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error),
               ),
             ),
-          );
-          setState(() {}); // Refresh UI after coming back from item details
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Image.network(
-                  item.imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.error),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(item.name,
-                style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
-            const SizedBox(height: 4),
-            Text('\$${item.price}',
-                style: const TextStyle(fontSize: 14, color: Colors.green)),
-            const SizedBox(height: 4),
-            Text('16 oz', style: TextStyle(fontSize: 12, color: Colors.grey)),
-            const SizedBox(height: 8),
-            IconButton(
+          ),
+          const SizedBox(height: 1),
+          Text(item.name,
+              style: const TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+          const SizedBox(height: 1),
+          Text('\$${item.price}',
+              style: const TextStyle(fontSize: 14, color: Colors.green)),
+          const SizedBox(height: 1),
+          Text('16 oz', style: TextStyle(fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 1),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 1), // Add some padding at the bottom
+            child: IconButton(
               icon: const Icon(Icons.add_circle, color: Colors.green),
               iconSize: 30.0,
               onPressed: () {
@@ -155,11 +159,13 @@ class _StoreScreenState extends State<StoreScreen> {
                 print('${item.name} added to cart');
               },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 }
 
 void main() {
@@ -167,4 +173,3 @@ void main() {
     home: StoreScreen(),
   ));
 }
-

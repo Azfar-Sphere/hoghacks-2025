@@ -1,5 +1,3 @@
-// start_screen.dart
-
 import 'package:flutter/material.dart';
 
 class StartScreen extends StatelessWidget {
@@ -8,56 +6,115 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
+      backgroundColor: const Color(0xFFF5F5F5), // Light background
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center, // Vertically centered content
           children: [
-            // Logo image
-            Image.asset('images/kidKash.png', height: 150, width: 150),
-            SizedBox(height: 20),
-            Text(
-              'Welcome to KidKash!\nYour new way of buying!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: const Color.fromARGB(255, 132, 173, 243),
+            // Green header with title
+            Container(
+              width: double.infinity,
+              height: 120,
+              color: const Color(0xFF43A047),
+              child: const Center(
+                child: Text(
+                  'KidKash',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 1.5,
+                  ),
+                ),
               ),
-              textAlign: TextAlign.center,
             ),
-            SizedBox(height: 40),
-            // Buttons for "Adult" and "Child" login
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent, // Use backgroundColor instead of primary
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    textStyle: TextStyle(fontSize: 18),
-                  ),
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/adultLogin');
-                  },
-                  child: Text('Adult'),
+
+            // Large logo
+            const SizedBox(height: 40),
+            Image.asset(
+              'images/kidKash.png',
+              height: 180, // Increased logo size
+            ),
+            const SizedBox(height: 40),
+
+            // Welcome message
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text(
+                'Start your journey with KidKash.\nChoose your login type:',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w500,
                 ),
-                SizedBox(width: 20), // Space between the buttons
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent, // Use backgroundColor instead of primary
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    textStyle: TextStyle(fontSize: 18),
+              ),
+            ),
+            const SizedBox(height: 30),
+
+            // Login Buttons
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                children: [
+                  _buildLoginButton(
+                    label: 'I am a Parent',
+                    icon: Icons.person_outline,
+                    onPressed: () => Navigator.pushReplacementNamed(context, '/adultLogin'),
                   ),
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/childlistview.dart');
-                  },
-                  child: Text('Child'),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  _buildLoginButton(
+                    label: 'I am a Kid',
+                    icon: Icons.child_care,
+                    onPressed: () => Navigator.pushReplacementNamed(context, '/childlistview.dart'),
+                  ),
+                ],
+              ),
+            ),
+
+            const Spacer(),
+
+            // Footer
+            const Padding(
+              padding: EdgeInsets.only(bottom: 16.0),
+              child: Text(
+                '© 2025 KidKash Inc.',
+                style: TextStyle(color: Colors.grey),
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
+  // Reusable login button builder with styling
+  static Widget _buildLoginButton({
+    required String label,
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton.icon(
+      icon: Icon(icon, size: 24),
+      label: Text(label),
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFF43A047),
+        foregroundColor: Colors.white,
+        minimumSize: const Size(double.infinity, 56),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        textStyle: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
+        elevation: 6,
+        shadowColor: Colors.black26,
+      ),
+    );
+  }
 }
+
+
+

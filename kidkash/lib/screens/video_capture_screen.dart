@@ -76,6 +76,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
     return Scaffold(
       body: Stack(
         children: [
+          // Camera Preview
           SizedBox.expand(
             child: FittedBox(
               fit: BoxFit.cover,
@@ -86,15 +87,35 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
               ),
             ),
           ),
+          
+          // Recording Button
           Positioned(
             bottom: 40,
             left: 0,
             right: 0,
             child: Center(
-              child: ElevatedButton(
-                onPressed: _isRecording ? stopRecording : startRecording,
-                child: Text(
-                  _isRecording ? 'Stop Recording' : 'Start Recording',
+              child: GestureDetector(
+                onTap: _isRecording ? stopRecording : startRecording,
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: _isRecording ? Colors.red : Colors.green, // Red when recording
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    _isRecording ? Icons.stop : Icons.circle, // Stop icon when recording, Circle for start
+                    color: Colors.white,
+                    size: 50,
+                  ),
                 ),
               ),
             ),
@@ -104,3 +125,4 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
     );
   }
 }
+
