@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 
 class VideoCaptureScreen extends StatefulWidget {
   const VideoCaptureScreen({super.key});
@@ -43,7 +44,21 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
 
     print('Video saved to: ${file.path}');
 
-    // TODO: Upload to FastAPI
+    // Replace with your local IP
+    final uri = Uri.parse('http://172.17.43.158:8000/detect-nod');
+
+    final request = http.MultipartRequest('POST', uri);
+    request.files.add(await http.MultipartFile.fromPath('video', file.path));
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      final result = await response.stream.bytesToString();
+      print('API response: $result');
+      // TODO: Update Firestore based on response
+    } else {
+      print('Upload failed: ${response.statusCode}');
+    }
   }
 
   @override

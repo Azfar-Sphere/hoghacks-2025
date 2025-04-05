@@ -39,6 +39,7 @@ dependencies:
   cloud_firestore: ^4.9.1 #pppppppppleeeeease work
   camera: ^0.10.5+9
   path_provider: ^2.1.1
+  http: any
 
 dev_dependencies:
   flutter_test:
