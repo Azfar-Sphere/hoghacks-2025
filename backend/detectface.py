@@ -4,7 +4,7 @@ import json
 import numpy as np
 import mediapipe as mp
 
-
+debug = 0
 
 def main(path) : 
     #Setup mediapipe
@@ -194,6 +194,12 @@ def main(path) :
             cv2.rectangle(frame, (x,y), (x+w, y+h), (0, 0, 255), 2)
             cv2.putText(frame, f"Age: {analysis[0]['age']}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)      
 
+        if frame_count == 0 or (face_height == 0 and face_width == 0):
+            print("NO_FACE")
+            return
+
+
+
         # Check if landmarks around the face exist, if they do, add their history (x and y coords)
         # and remove oldest frame if limit exceeded
         # Deletes previous frames in certain landmark not detected so frames are continuous
@@ -355,20 +361,24 @@ def main(path) :
             movement_dict["nod"] += 1
             print(f"Nod Detected with {motion_scores}")
 
-        cv2.imshow("Frame", frame)
 
-        key = cv2.waitKey(100)
+        if debug:
+            cv2.imshow("Frame", frame)
 
-        if key == ord('q'):
-            break
+            key = cv2.waitKey(100)
+
+            if key == ord('q'):
+                break
 
     capture.release()
     cv2.destroyAllWindows()
     
     if (movement_dict['nod'] > movement_dict['headshake']):
-        return True
+        print("NOD")
+        return "NOD"
     else: 
-        return False
+        print("SHAKE")
+        return "SHAKE"
 
 main()
 

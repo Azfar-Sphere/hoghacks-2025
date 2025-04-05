@@ -24,9 +24,19 @@ async def detect_nod(video: UploadFile = File(...)):
 
     print("Subprocess Output:", result.stdout)
 
-    nod_detected = "True" in result.stdout
+    if "NO_FACE" in result.stdout:
+        return JSONResponse(status_code=400, content={"error": "No face detected in the video."})
+    
+    if "SHAKE" in result.stdout:
+        return JSONResponse(status_code=401, content={"error": "Kid Un-Approved!"})
+    
+    if "NOD" in result.stdout:
+        return JSONResponse(status_code=200, content={"success": "Congratulations, Kid approved!"})
 
     # Clean up if you want
     os.remove(temp_path)
 
-    return JSONResponse(content={"nod_detected": nod_detected})
+    return JSONResponse(status_code=500, content={"error": "Unexpected response from processing."})
+
+
+
