@@ -5,7 +5,7 @@ import numpy as np
 import mediapipe as mp
 import sys
 
-debug = 1
+debug = 0
 
 
 def main(path) : 
@@ -68,12 +68,13 @@ def main(path) :
         if not ret:
             break
         
-        # frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE) # For Samsung Phones
-        frame = cv2.rotate(frame, cv2.ROTATE_180) # For iPhone Videos
+        frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE) # For Samsung Phones
+        # frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        # frame = cv2.rotate(frame, cv2.ROTATE_180) # For iPhone Videos
 
 
         #Resized image to 640x480
-        frame = cv2.resize(frame, (640, 480))
+        # frame = cv2.resize(frame, (640, 480))
 
         #Adds frame count
         frame_count += 1
@@ -101,7 +102,6 @@ def main(path) :
             "right_cheek": False,
         }
 
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         result = face_mesh.process(frame)
         image_height, image_width, _ = frame.shape
 
@@ -179,8 +179,9 @@ def main(path) :
 
         #Loops over the detected faces (only 1)
         for i, face in enumerate(faces):
-
-            # Gets details like with width and height of the face
+            if i > 0:
+                break
+        # Gets details like with width and height of the face
 
             x = face['facial_area']['x']
             y = face['facial_area']['y']
@@ -196,10 +197,10 @@ def main(path) :
             if cropped_face.shape[0] < 100 or cropped_face.shape[1] < 100:
                 cropped_face = cv2.resize(cropped_face, (100, 100))
 
-            # Predicts age od face
+            # Predicts age of face
             analysis = DeepFace.analyze(cropped_face, actions=['age'], enforce_detection=False)
             age = analysis[0]['age']
-            if age > 40:
+            if age > 35:
                 return "TOO_OLD"
 
             # Displays prediction
