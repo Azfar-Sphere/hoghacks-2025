@@ -14,9 +14,11 @@ mp_drawing = mp.solutions.drawing_utils
 # Load the video 
 capture = cv2.VideoCapture("IMG_6172.MOV")
 
+#Setup frame Skipping
 frame_skip = 2
 frame_count = 0
 
+#Intialize Lists to track chin and nose placement histories
 y_chin_history = []
 y_nose_history = []
 x_chin_history = []
@@ -24,6 +26,7 @@ x_nose_history = []
 
 max_history = 7
 
+#Sets thresholds for maximum and minimum vertical and horizontal movement of head
 vertical_threshold = 0.07
 horizontal_threshold = 0.05
 
@@ -35,14 +38,18 @@ while True:
     if not ret:
         break
 
+    #Resized image to 640x480
     frame = cv2.resize(frame, (640, 480))
     frame = cv2.rotate(frame, cv2.ROTATE_180)
 
+    #Adds frame count
     frame_count += 1
 
+    #Skips frames
     if frame_count % frame_skip != 0:
         continue
 
+    #Extracts the faces from the video 
     faces = DeepFace.extract_faces(frame, enforce_detection=False)
 
     # if not faces:
@@ -54,9 +61,11 @@ while True:
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         result = face_mesh.process(frame)
 
+        #Gets Chin and Nose Coordinates
         chin = result.multi_face_landmarks[0].landmark[152]
         nose = result.multi_face_landmarks[0].landmark[1]
 
+        #Transforms those coordinated based on the image shape
         image_height, image_width, _ = frame.shape
         chin_x = int(chin.x * image_width)
         chin_y = int(chin.y * image_height)
@@ -64,16 +73,17 @@ while True:
         nose_x = int(nose.x * image_width)
         nose_y = int(nose.y * image_height)
         
-
+        #Places Chin and Nose Coordinates on Image
         cv2.circle(frame, (chin_x, chin_y), 5, (0,0,255), 3)
         cv2.circle(frame, (nose_x, nose_y), 5, (0,0,255), 3)
     except:
         pass
 
+    #Sets up Face Height and Face Width Variables
     face_height = 0
     face_width = 0
 
-    # Detect Age
+    #Loops over the detected faces
     for i, face in enumerate(faces):
 
         x = face['facial_area']['x']
@@ -100,12 +110,14 @@ while True:
 
     # Detect Nod:
     try:
+        #Appends chin and nose movements to lists
         y_chin_history.append(chin_y)
         y_nose_history.append(nose_y)
 
         x_chin_history.append(chin_x)
         x_nose_history.append(nose_x)
 
+        #Pops older frames chin and nose history
         if len(y_chin_history) > max_history:
             y_chin_history.pop(0)
 
@@ -119,6 +131,7 @@ while True:
             x_nose_history.pop(0)
 
 
+        #If enough frames of movement for chin and nose movement is recorded, computes vertical and horitzontal movement and detects nods
         if len(y_chin_history) == max_history and len(y_nose_history) == max_history:
             dy_chin = np.diff(y_chin_history) / face_height
             dy_nose = np.diff(y_nose_history) / face_height
