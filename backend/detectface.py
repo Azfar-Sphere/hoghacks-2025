@@ -16,7 +16,7 @@ def main(path) :
 
     # Load the video, gets FPS and video duration
 
-    capture = cv2.VideoCapture(path_fixed)
+    capture = cv2.VideoCapture(path)
     fps = capture.get(cv2.CAP_PROP_FPS)
     total_frames = capture.get(cv2.CAP_PROP_FRAME_COUNT)  
 
