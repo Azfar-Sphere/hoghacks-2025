@@ -6,14 +6,14 @@ import mediapipe as mp
 
 
 
-def main() : 
+def main(path) : 
     #Setup mediapipe
     mp_face_mesh = mp.solutions.face_mesh
     face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1)
     mp_drawing = mp.solutions.drawing_utils
 
     # Load the video 
-    capture = cv2.VideoCapture("IMG_6171.MOV")
+    capture = cv2.VideoCapture(path)
 
     # Setup frame Skipping
     frame_skip = 5
@@ -371,3 +371,7 @@ def main() :
         return False
 
 main()
+
+if __name__ == "__main__":
+    result = main(sys.argv[1])
+    print(result)
