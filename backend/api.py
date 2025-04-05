@@ -36,7 +36,9 @@ async def detect_nod(video: UploadFile = File(...)):
     if "NOD" in result.stdout:
         return JSONResponse(status_code=250, content={"success": "Kid Approved!"})
     if "TOO_OLD" in result.stdout:
-        return JSONResponse(status_code=250, content={"error": "You are not a kid, liar!"})
+        return JSONResponse(status_code=398, content={"error": "You are not a kid, liar!"})
+    if "NO_MOVEMENT" in result.stdout:
+        return JSONResponse(status_code=397, content={"error": "Move your head properly!"})
 
 
     return JSONResponse(status_code=500, content={"error": "Unexpected response."})

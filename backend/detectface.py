@@ -4,8 +4,9 @@ import json
 import numpy as np
 import mediapipe as mp
 import sys
+import subprocess
 
-debug = 0
+debug = 1
 
 
 def main(path) : 
@@ -14,7 +15,8 @@ def main(path) :
     face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1)
 
     # Load the video, gets FPS and video duration
-    capture = cv2.VideoCapture(path)
+
+    capture = cv2.VideoCapture(path_fixed)
     fps = capture.get(cv2.CAP_PROP_FPS)
     total_frames = capture.get(cv2.CAP_PROP_FRAME_COUNT)  
 
@@ -194,8 +196,8 @@ def main(path) :
             # Predicts age od face
             analysis = DeepFace.analyze(cropped_face, actions=['age'], enforce_detection=False)
             age = analysis[0]['age']
-            if age > 30:
-                return "TOO_OLD"
+            # if age > 30:
+                # return "TOO_OLD"
 
             # Displays prediction
             cv2.rectangle(frame, (x,y), (x+w, y+h), (0, 0, 255), 2)
@@ -377,11 +379,15 @@ def main(path) :
     if (movement_dict['nod'] > movement_dict['headshake']):
         print("NOD")
         return "NOD"
-    else: 
+    elif (movement_dict['nod'] < movement_dict['headshake']): 
         print("SHAKE")
         return "SHAKE"
+    else:
+        return "NO_MOVEMENT"
 
 
 if __name__ == "__main__":
     result = main(sys.argv[1])
     print(result)
+
+
