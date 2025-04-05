@@ -5,6 +5,7 @@ import 'package:kidkash/screens/storescreen.dart';
 import 'package:kidkash/screens/requestTrigger.dart';
 import 'package:kidkash/screens/kid_listener_screen.dart';
 import 'package:kidkash/screens/childlistview.dart';
+import 'package:kidkash/screens/startscreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const ListViewScreen(),
+      home: const KidListenerScreen(),
     );
   }
 }

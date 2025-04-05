@@ -45,7 +45,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
     print('Video saved to: ${file.path}');
 
     // Replace with your local IP
-    final uri = Uri.parse('http://172.17.43.158:8000/detect-nod');
+    final uri = Uri.parse('http://172.20.10.6:8000/detect-nod');
 
     final request = http.MultipartRequest('POST', uri);
     request.files.add(await http.MultipartFile.fromPath('video', file.path));
