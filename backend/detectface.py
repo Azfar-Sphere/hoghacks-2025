@@ -4,10 +4,12 @@ import json
 import numpy as np
 
 # Load the video 
-capture = cv2.VideoCapture("IMG_8676.MOV")
+capture = cv2.VideoCapture("IMG_6170.MOV")
 
 frame_skip = 5
 frame_count = 0
+
+
 
 # Read the video frame by frame
 while True:
@@ -17,7 +19,7 @@ while True:
     if not ret:
         break
 
-    frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+    frame = cv2.rotate(frame, cv2.ROTATE_180)
 
     frame_count += 1
 
@@ -60,7 +62,7 @@ while True:
         
     cv2.imshow("Frame", frame)
 
-    key = cv2.waitKey(1) & 0xFF  
+    key = cv2.waitKey(10) & 0xFF  
 
     if key == ord('q'):
         break
