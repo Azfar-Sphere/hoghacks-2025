@@ -19,24 +19,21 @@ class DefaultFirebaseOptions {
     if (kIsWeb) {
       return web;
     }
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-        return android;
-      case TargetPlatform.iOS:
-        return ios;
-      case TargetPlatform.macOS:
-        return macos;
-      case TargetPlatform.windows:
-        return windows;
-      case TargetPlatform.linux:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for linux - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
-      default:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions are not supported for this platform.',
-        );
+     switch (defaultTargetPlatform) {
+    case TargetPlatform.android:
+      return android;
+    case TargetPlatform.iOS:
+      return ios;
+    case TargetPlatform.macOS:
+      return macos;
+    case TargetPlatform.windows:
+      return windows;
+    case TargetPlatform.linux:
+      return linux; // Use the linux configuration instead of throwing an error
+    default:
+      throw UnsupportedError(
+        'DefaultFirebaseOptions are not supported for this platform.',
+      );
     }
   }
 
@@ -77,6 +74,16 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyAuiE1PDnZcKg33cn7oUJTBA0bIfvykuTk',
+    appId: '1:596075688752:web:08781fbf36fa3601880ef5',
+    messagingSenderId: '596075688752',
+    projectId: 'kidkash-65e33',
+    authDomain: 'kidkash-65e33.firebaseapp.com',
+    storageBucket: 'kidkash-65e33.firebasestorage.app',
+    measurementId: 'G-GCMZJS5ZNQ',
+  );
+
+  static const FirebaseOptions linux = FirebaseOptions(
     apiKey: 'AIzaSyAuiE1PDnZcKg33cn7oUJTBA0bIfvykuTk',
     appId: '1:596075688752:web:08781fbf36fa3601880ef5',
     messagingSenderId: '596075688752',
