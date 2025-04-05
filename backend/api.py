@@ -34,6 +34,6 @@ async def detect_nod(video: UploadFile = File(...)):
     if "SHAKE" in result.stdout:
         return JSONResponse(status_code=399, content={"error": "Kid Un-Approved!"})
     if "NOD" in result.stdout:
-        return JSONResponse(status_code=200, content={"success": "Kid Approved!"})
+        return JSONResponse(status_code=250, content={"success": "Kid Approved!"})
 
     return JSONResponse(status_code=500, content={"error": "Unexpected response."})
