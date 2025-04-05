@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "596075688752",
+    "project_id": "kidkash-65e33",
+    "storage_bucket": "kidkash-65e33.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:596075688752:android:b85535ca50642556880ef5",
+        "android_client_info": {
+          "package_name": "com.example.kidkash"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNY4qmIrJ1R-tvwKruZAkxupqJjnAUOW4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
