@@ -68,8 +68,8 @@ def main(path) :
         if not ret:
             break
         
-        # frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE) # For Samsung Phones
-        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE) # For Samsung Phones
+       # frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
         # frame = cv2.rotate(frame, cv2.ROTATE_180) # For iPhone Videos
 
 
@@ -326,7 +326,7 @@ def main(path) :
                 shake_detected = True
                 print("Head Shake Detected")
                 movement_dict['headshake'] += 1
-                cv2.putText(frame, "Shake Detected", (x+150, y), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 255), 2)
+                cv2.putText(frame, "Shake Detected", (x+150, y-100), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 255), 2)
 
 
 

@@ -51,7 +51,10 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
     request.files.add(await http.MultipartFile.fromPath('video', file.path));
 
     final response = await request.send();
-
+    print('Request sent to: $uri');
+    print('Request headers: ${request.headers}');
+    print('Request files: ${request.files}');
+    print('Response status: ${response.statusCode}');
     if (response.statusCode == 200) {
       final result = await response.stream.bytesToString();
       print('API response: $result');
