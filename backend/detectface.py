@@ -8,17 +8,17 @@ import mediapipe as mp
 
 #Setup mediapipe
 mp_face_mesh = mp.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=5)
+face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1)
 mp_drawing = mp.solutions.drawing_utils
 
 # Load the video 
 capture = cv2.VideoCapture("IMG_6171.MOV")
 
-#Setup frame Skipping
+# Setup frame Skipping
 frame_skip = 5
 frame_count = 0
 
-#Intialize Lists to track chin and nose placement histories
+# Initializes Empty Lists for Chin, Nose, Forehead, Ears and Cheek Histories
 y_chin_history = []
 x_chin_history = []
 
@@ -42,9 +42,10 @@ y_right_cheek_history = []
 x_right_cheek_history = []
 
 
+# Sets the Maximum number of Frames to Look and compare movement between
 max_history = 7
 
-
+# Sets up Dict to store headshakes and nods in a video
 movement_dict = {
     "headshake":0,
     "nod":0
@@ -93,7 +94,9 @@ while True:
     result = face_mesh.process(frame)
     image_height, image_width, _ = frame.shape
 
-        #Gets Chin and Nose and Forehead Coordinates
+        # Gets Chin, Nose, Forehead, Ears and Cheek coordinates from the facial landmarks, if such coordinates exists, 
+        # sets their value to true in valid_points dicts
+        # Also draws the points on the facial frames
 
     try:
         chin = result.multi_face_landmarks[0].landmark[152]
@@ -163,8 +166,10 @@ while True:
     face_height = 0
     face_width = 0
 
-    #Loops over the detected faces
+    #Loops over the detected faces (only 1)
     for i, face in enumerate(faces):
+
+        # Gets details like with width and height of the face
 
         x = face['facial_area']['x']
         y = face['facial_area']['y']
@@ -174,17 +179,23 @@ while True:
         face_height = h
         face_width = w
 
+        # Crops the face to necessary area
+
         cropped_face = frame[y:y+h, x:x+w]
         if cropped_face.shape[0] < 100 or cropped_face.shape[1] < 100:
             cropped_face = cv2.resize(cropped_face, (100, 100))
 
+        # Predicts age od face
         analysis = DeepFace.analyze(cropped_face, actions=['age'], enforce_detection=False)
 
-        # print(f"\n\nAnalysis: {analysis} \n\n")
-        # print(f"Age: {analysis[0]['age']}, Gender: {analysis[0]['gender']}, Emotion: {analysis[0]['emotion']}")
 
+        # Displays prediction
         cv2.rectangle(frame, (x,y), (x+w, y+h), (0, 0, 255), 2)
         cv2.putText(frame, f"Age: {analysis[0]['age']}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)      
+
+    # Check if landmarks around the face exist, if they do, add their history (x and y coords)
+    # and remove oldest frame if limit exceeded
+    # Deletes previous frames in certain landmark not detected so frames are continuous
 
     if valid_points['chin']:
         y_chin_history.append(chin_y)
@@ -265,6 +276,8 @@ while True:
         x_right_cheek_history.clear()
 
 
+    # Sets up variable horizontal threshold based on face_width_ratio
+
     face_width_ratio = face_width / 640  
     face_width_ratio = np.clip(face_width_ratio, 0.3, 1.0)
 
@@ -302,19 +315,20 @@ while True:
             cv2.putText(frame, "Shake Detected", (x+150, y), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 255), 2)
 
 
-    #If enough frames of movement for chin and nose movement is recorded, computes vertical and horitzontal movement and detects nods
+
     motion_scores = []
 
+    # Sets up Variable vertical_threshold based on how large the face is on the frame
     face_height_ratio = face_height / 480
     face_height_ratio = np.clip(face_height_ratio, 0.3, 1.0)
     vertical_threshold = 0.05 + 0.03 * (1-face_height_ratio)
 
+    # Checks if appropriate frame history recorded for chin, nose and forehead points, then based on thresholds records a nod
     if len(y_chin_history) == max_history:
         dy_chin = np.diff(y_chin_history) / face_height
         dx_chin = np.diff(x_chin_history) / face_width
         v_chin = np.max(dy_chin) - np.min(dy_chin)
         h_chin = np.max(dx_chin) - np.min(dx_chin)
-        # print(f"\nVertical Chin: {v_chin}, Horizontal Chin: {h_chin}")
         if v_chin > vertical_threshold and h_chin < horizontal_threshold*0.6:
             motion_scores.append('chin')
 
@@ -331,10 +345,10 @@ while True:
         dx_forehead = np.diff(x_forehead_history) / face_width
         v_forehead = np.max(dy_forehead) - np.min(dy_forehead)
         h_forehead = np.max(dx_forehead) - np.min(dx_forehead)
-        # print(f"Vertical Forehead: {v_forehead}, Horizontal Forehead: {h_forehead}\n")
         if v_forehead > vertical_threshold and h_forehead < horizontal_threshold:
             motion_scores.append('forehead')
 
+    # If more y movement recorded from at least 2 of the 3 points, notes it down as a nod
     if len(motion_scores) >= 2:
         cv2.putText(frame, "Nod Detected", (x+150, y), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
         movement_dict["nod"] += 1
