@@ -14,11 +14,15 @@ def main(path) :
     face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1)
     mp_drawing = mp.solutions.drawing_utils
 
-    # Load the video 
+    # Load the video, gets FPS and video duration
     capture = cv2.VideoCapture(path)
+    fps = capture.get(cv2.CAP_PROP_FPS)
+    total_frames = capture.get(cv2.CAP_PROP_FRAME_COUNT)  
 
     # Setup frame Skipping
-    frame_skip = 5
+    # Sets up amount of frames to skip based on the target frames to analyze and the amount of frames in the video
+    target_frames = 60
+    frame_skip = max(1, min(int(total_frames // target_frames), 8))
     frame_count = 0
 
     # Initializes Empty Lists for Chin, Nose, Forehead, Ears and Cheek Histories
@@ -46,7 +50,7 @@ def main(path) :
 
 
     # Sets the Maximum number of Frames to Look and compare movement between
-    max_history = 7
+    max_history = 10
 
     # Sets up Dict to store headshakes and nods in a video
     movement_dict = {
