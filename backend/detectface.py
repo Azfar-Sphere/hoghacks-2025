@@ -4,9 +4,8 @@ import json
 import numpy as np
 import mediapipe as mp
 import sys
-import subprocess
 
-debug = 1
+debug = 0
 
 
 def main(path) : 
@@ -68,6 +67,8 @@ def main(path) :
 
         if not ret:
             break
+
+        frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
 
         #Resized image to 640x480
         frame = cv2.resize(frame, (640, 480))
@@ -196,8 +197,8 @@ def main(path) :
             # Predicts age od face
             analysis = DeepFace.analyze(cropped_face, actions=['age'], enforce_detection=False)
             age = analysis[0]['age']
-            # if age > 30:
-                # return "TOO_OLD"
+            if age > 30:
+                return "TOO_OLD"
 
             # Displays prediction
             cv2.rectangle(frame, (x,y), (x+w, y+h), (0, 0, 255), 2)
