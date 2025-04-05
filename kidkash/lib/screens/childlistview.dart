@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:kidkash/model/item.dart'; // Import the Item model
+import 'package:kidkash/screens/video_capture_screen.dart'; // Import VideoCaptureScreen
 
 class ListViewScreen extends StatelessWidget {
   final List<Item> cartItems; // List of items passed from CheckoutPage
 
   // Constructor to accept cartItems
-const ListViewScreen({super.key, required this.cartItems});
+  const ListViewScreen({super.key, required this.cartItems});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,31 @@ const ListViewScreen({super.key, required this.cartItems});
           );
         },
       ),
+      // Bottom button to navigate to VideoCaptureScreen
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const VideoCaptureScreen(),
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            backgroundColor: Colors.blue,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: const Text(
+            'Go to Video Capture',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
     );
   }
 }
-
