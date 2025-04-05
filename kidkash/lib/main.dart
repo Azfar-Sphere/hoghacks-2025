@@ -5,10 +5,14 @@ import 'package:kidkash/screens/storescreen.dart';
 import 'package:kidkash/screens/requestTrigger.dart';
 import 'package:kidkash/screens/kid_listener_screen.dart';
 import 'package:kidkash/screens/childlistview.dart';
+import 'package:kidkash/screens/storescreen.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -23,7 +27,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const ListViewScreen(),
+
+      // 👇 Change this line to show StoreScreen instead of ListViewScreen
+      home: const StoreScreen(),
     );
   }
 }

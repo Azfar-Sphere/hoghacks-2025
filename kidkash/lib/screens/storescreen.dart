@@ -58,8 +58,7 @@ class _StoreScreenState extends State<StoreScreen> {
                   );
                 },
               ),
-              // Badge to show cart count
-              if (cartItems.isNotEmpty) // Show badge only if there are items in the cart
+              if (cartItems.isNotEmpty)
                 Positioned(
                   top: 0,
                   right: 0,
@@ -89,86 +88,72 @@ class _StoreScreenState extends State<StoreScreen> {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Row 1 of images
-            Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 5, // Number of images in this row
-                itemBuilder: (context, index) {
-                  return _buildItemImage(context, dummyItems[index]);
-                },
-              ),
-            ),
-            // Row 2 of images
-            Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 5, // Number of images in this row
-                itemBuilder: (context, index) {
-                  return _buildItemImage(context, dummyItems[index + 5]);
-                },
-              ),
-            ),
-          ],
+        child: GridView.builder(
+          padding: const EdgeInsets.all(10),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // Two items per row
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemCount: dummyItems.length,
+          itemBuilder: (context, index) {
+            return _buildItemCard(context, dummyItems[index]);
+          },
         ),
       ),
     );
   }
 
-  // Helper function to build item image without card
-  Widget _buildItemImage(BuildContext context, Item item) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
+  Widget _buildItemCard(BuildContext context, Item item) {
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       child: GestureDetector(
         onTap: () async {
-  await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ItemDetailScreen(
-        item: item,
-        cartItems: cartItems, // passing cart items by reference
-      ),
-    ),
-  );
-  setState(() {}); // Refresh UI after coming back from item details
-},
-
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: MediaQuery.of(context).size.width / 3,
-                  child: Image.network(
-                    item.imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.error),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(item.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('\$${item.price}', style: TextStyle(fontSize: 14)),
-                Text('16 oz', style: TextStyle(fontSize: 12, color: Colors.grey)),
-              ],
-            ),
-            Positioned(
-              top: 0,
-              right: 0,
-              child: IconButton(
-                icon: const Icon(Icons.add_circle, color: Colors.green),
-                iconSize: 30.0,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () {
-                  _addToCart(item);
-                  print('${item.name} added to cart');
-                },
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ItemDetailScreen(
+                item: item,
+                cartItems: cartItems, // passing cart items by reference
               ),
+            ),
+          );
+          setState(() {}); // Refresh UI after coming back from item details
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Image.network(
+                  item.imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.error),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(item.name,
+                style: const TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+            const SizedBox(height: 4),
+            Text('\$${item.price}',
+                style: const TextStyle(fontSize: 14, color: Colors.green)),
+            const SizedBox(height: 4),
+            Text('16 oz', style: TextStyle(fontSize: 12, color: Colors.grey)),
+            const SizedBox(height: 8),
+            IconButton(
+              icon: const Icon(Icons.add_circle, color: Colors.green),
+              iconSize: 30.0,
+              onPressed: () {
+                _addToCart(item);
+                print('${item.name} added to cart');
+              },
             ),
           ],
         ),
@@ -176,8 +161,6 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 }
-
-
 
 void main() {
   runApp(MaterialApp(
