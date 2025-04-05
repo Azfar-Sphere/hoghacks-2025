@@ -12,10 +12,10 @@ face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=5)
 mp_drawing = mp.solutions.drawing_utils
 
 # Load the video 
-capture = cv2.VideoCapture("IMG_6172.MOV")
+capture = cv2.VideoCapture("IMG_6171.MOV")
 
 #Setup frame Skipping
-frame_skip = 1
+frame_skip = 5
 frame_count = 0
 
 #Intialize Lists to track chin and nose placement histories
@@ -315,7 +315,7 @@ while True:
         v_chin = np.max(dy_chin) - np.min(dy_chin)
         h_chin = np.max(dx_chin) - np.min(dx_chin)
         # print(f"\nVertical Chin: {v_chin}, Horizontal Chin: {h_chin}")
-        if v_chin > vertical_threshold*1.8 and h_chin < horizontal_threshold:
+        if v_chin > vertical_threshold and h_chin < horizontal_threshold*0.6:
             motion_scores.append('chin')
 
     if len(y_nose_history) == max_history:
